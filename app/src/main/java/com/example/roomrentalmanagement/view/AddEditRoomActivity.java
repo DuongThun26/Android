@@ -1,16 +1,14 @@
 package com.example.roomrentalmanagement.view;
 
-package com.example.roomrental.view;
-
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.roomrental.R;
-import com.example.roomrental.controller.RoomController;
-import com.example.roomrental.model.Room;
+import com.example.roomrentalmanagement.R;
+import com.example.roomrentalmanagement.controller.RoomController;
+import com.example.roomrentalmanagement.model.Room;
 
 public class AddEditRoomActivity extends AppCompatActivity {
 
@@ -74,7 +72,8 @@ public class AddEditRoomActivity extends AppCompatActivity {
         String phone = edtPhone.getText().toString().trim();
 
         // Validate dữ liệu từ Controller
-        String validationError = controller.validateRoom(id, name, priceStr);
+        boolean isNewRoom = (roomIndex == -1);
+        String validationError = controller.validateRoom(id, name, priceStr, phone, isNewRoom);
         if (!validationError.isEmpty()) {
             Toast.makeText(this, validationError, Toast.LENGTH_SHORT).show();
             return;
