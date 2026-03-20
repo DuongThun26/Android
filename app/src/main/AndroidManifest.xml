@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RoomRentalManagement">
         <activity
+            android:name=".view.AddEditRoomActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.MainActivity"
             android:exported="true">
             <intent-filter>
