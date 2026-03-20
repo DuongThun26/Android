@@ -1,6 +1,7 @@
 package com.example.roomrentalmanagement.controller;
 
-import com.example.roomrental.model.Room;
+import com.example.roomrentalmanagement.model.Room;
+
 import java.util.ArrayList;
 import java.util.List;
 
