@@ -1,26 +1,75 @@
 package com.example.roomrentalmanagement.view;
 
+
+
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.roomrentalmanagement.R;
+import com.example.roomrentalmanagement.adapter.RoomAdapter;
+import com.example.roomrentalmanagement.controller.RoomController;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
+
+    private RecyclerView recyclerView;
+    private RoomAdapter adapter;
+    private RoomController controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        controller = RoomController.getInstance();
+        recyclerView = findViewById(R.id.recyclerView);
+        FloatingActionButton fabAdd = findViewById(R.id.fabAdd);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new RoomAdapter(controller.getRooms(), new RoomAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                // Update - Mở màn hình sửa và truyền vị trí
+                Intent intent = new Intent(MainActivity.this, AddEditRoomActivity.class);
+                intent.putExtra("ROOM_INDEX", position);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onItemLongClick(int position) {
+                // Delete - Hiển thị AlertDialog
+                showDeleteDialog(position);
+            }
         });
+        recyclerView.setAdapter(adapter);
+
+        fabAdd.setOnClickListener(v -> {
+            // Create - Mở màn hình thêm mới
+            startActivity(new Intent(MainActivity.this, AddEditRoomActivity.class));
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged(); // Cập nhật lại list sau khi thêm/sửa
+    }
+
+    private void showDeleteDialog(int position) {
+        new AlertDialog.Builder(this)
+                .setTitle("Xác nhận xóa")
+                .setMessage("Bạn có chắc chắn muốn xóa phòng này không?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    controller.deleteRoom(position);
+                    adapter.notifyItemRemoved(position);
+                    adapter.notifyItemRangeChanged(position, controller.getRooms().size());
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 }
